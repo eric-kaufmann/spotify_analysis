@@ -186,5 +186,8 @@ fabric.properties
 # data folder
 data/
 
+# vscode
+.vscode/
+
 # random files
 .DS_Store
