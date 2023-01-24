@@ -188,3 +188,9 @@ data/
 
 # random files
 .DS_Store
+projektbericht/conference_101719.aux
+projektbericht/conference_101719.fdb_latexmk
+.gitignore
+.gitignore
+projektbericht/conference_101719.fls
+projektbericht/conference_101719.synctex.gz
