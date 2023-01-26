@@ -18,10 +18,10 @@
 Jena, Germany \\
 eric.kaufmann@uni-jena.de}
 \and
-\IEEEauthorblockN{2\textsuperscript{nd} Given Name Surname}
+\IEEEauthorblockN{2\textsuperscript{nd} Maria Gogolev}
 \IEEEauthorblockA{
-City, Country \\
-email address}
+Jena, Germany \\
+maria.gogolev@uni-jena.de}
 }
 
 \maketitle
@@ -39,6 +39,83 @@ component, formatting, style, styling, insert
 \section{Introduction}
 This document is a model and instructions for \LaTeX.
 Please observe the conference page limits. 
+\section{Datensätze}
+Der Datensatz \textit{Spotify 1.2M+ Songs} \cite{d2} enthält Audio-Eigenschaften von über 1.2 Million Liedern die mit der Spotify API abgerufen wurden.
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+Attribut & Beschreibung \\ \hline
+id & Eindeutige Identifikation des Lieds. \\ \hline
+name & Der Name des Lieds. \\ \hline
+album & Der Name des Albums, zu dem das Lied gehört. \\ \hline
+album\_id & Eindeutige Identifikation des Albums. \\ \hline
+artists & Der Name des Künstlers, der das Lied erstellt hat. \\ \hline
+artist\_ids & Eindeutige Identifikation des Künstlers. \\ \hline
+track\_number & Die Liednummer auf dem Album. \\ \hline
+disc\_number & Die Disc-Nummer des Albums, auf dem das Lied ist. \\ \hline
+explicit & Gibt an, ob das Lied expliziten Inhalt enthält. \\ \hline
+danceability & Eignung eines Liedes zum Tanzen. \\ \hline
+energy & Eine Messung der Intensität und Aktivität des Lieds. \\ \hline
+key & Der musikalische Schlüssel des Lieds. \\ \hline
+loudness & Der Gesamtlautstärke des Lieds in Dezibel (dB). \\ \hline
+mode & Lied Dur- oder Moll-Tonart geschrieben \\ \hline
+speechiness & Der Sprachanteils eines Lieds. \\ \hline
+acousticness & Eine Schätzung, wie akustisch das Lied ist. \\ \hline
+instrumentalness & Der Anteil des Lieds der instrumentale Musik enthält. \\ \hline
+liveness & Wahrscheinlichkeit, dass ein Track live ist. \\ \hline
+valence & Empfundene Positivität/Negativität. \\ \hline
+tempo & Das Tempo des Lieds, gemessen in BPM. \\ \hline
+duration\_ms & Die Dauer des Lieds in Millisekunden. \\ \hline
+time\_signature & Angabe wie viele Schläge in jedem Takt enthalten sind. \\ \hline
+year & Das Erscheinungsjahr des Lieds. \\ \hline
+release\_date & Das Datum, an dem das Lied veröffentlicht wurde. \\ \hline
+\end{tabular}
+\caption{Attributbeschreibungen des Musik-Datensatzes}
+\label{tab:music_dataset}
+\end{table}
+
+Der zweite Datensatz, \textit{Spotify Playlists} \cite{d1} enthält Informationen zu User-erstellten Playlists. Jeder Playlist ist eine eindeutige User-ID zugeordnet. Jede Spalte enthält einen Song der durch dessen Namen und zugeordneten Künstler identifiziert wird, und die jeweilige Playlist die den Song enthält. 
+
+\section{Vorverarbeitung}
+split artists, explode artists, Merging von playlist daten mit song daten
+\section{Analyse}
+\subsection{Attributes over Time}
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{images/over_time.png}
+\caption{Entwicklung der Musik-Attribute von 1900 bis 2020. Die in der Mitte verlaufende Linie ist der Durchschnittswert, die obere Linie das Maximum, die untere Linie das Minimum und der grüne Bereich ist die Standardabweichung im gegebenen Jahr.}
+\label{time}
+\end{figure*}
+Aus den vorliegenden Daten geht hervor, dass sich die Musik im Laufe der Jahre in Bezug auf verschiedene Attribute deutlich verändert hat, und gewisse Trends ersichtlich sind. Die Analyse bezieht sich auf Abbildung \ref{time}. Im Folgenden werden nicht alle Attribute aufgegriffen, da bei ihnen Statistiken wie Standardabweichung und Durchschnittswert weniger aussagekräftig sind (bspw "Key" also der Notenschlüssel).
+
+\begin{itemize}
+\item{Danceability} Beginnend mit der danceability sehen wir, dass der Mindestwert und der Maximalwert über die Jahre leicht auseinander gehen. Nach einem Absinken der danceability in den 1940 Jahren zeigt der Durchschnittswert wieder einen leichten Aufwärtstrend. Die Standardabweichung bleibt relativ stabil über die Zeit.
+
+\item{Eneregy} Auch bei der Energie ist ein ähnlicher Trend zu beobachten: Der Minimalwert bleibt relativ konstant, der Maximalwert steigt stetig an, der Durchschnittswert zeigt einen Aufwärtstrend und die Standardabweichung nimmt im Laufe der Zeit zu. Dies deutet darauf hin, dass die Musik im Laufe der Jahre energiegeladener geworden ist, es gleichzeitig aber mehr Diversität in diesem Attribut gibt.
+
+\item{Loudness} Bei der Lautstärke ist ein sinkender Minimalwert und eine starke Zunahme des Maximalwerts zu verzeichnen, während der Durchschnitt relativ konstant bei ca. 4 Minuten und 6 Sekunden mit nur geringer Standardabweichung bleibt.
+
+\item{Mode} Der Durchschnittswert des Modus bleibt über die gesamte Zeit überhalb von 0.5, was aussagt, dass stets mehr Musik in Dur produziert wird als in Moll, wobei ein leichter Abstieg des Durchschnittswertes in den letzten jahren zu verzeichnen ist. Es wurde also in den letzten Jahren mehr in Moll produziert. Die Standardabweichung bleibt konstant hoch der Modus nur zwei Werte annehmen kann.
+
+\item{Speechiness} Das Minimum des Sprachanteils bleibt nahe bei 0, da Instrumentalmusik früher wie auch heute relevant ist. Der anfangs geringe Maximalwert entwickelt sich hingegen nach oben. Durchschnittswert und Standardabweichung bleiben gering was darauf hindeutet das der Großteil der Musik nach wie vor instrumental ist. Die Sprachlichkeit zeigt einen konstanten Rückgang der Minimal-, Maximal- und Durchschnittswerte, was darauf hindeutet, dass die Musik im Laufe der Jahre weniger sprachorientiert geworden ist. 
+
+\item{Acousticness} Die Akustizität zeigt einen konstanten Rückgang der Durchschnittswerte, was darauf hindeutet, dass die Musik im Laufe der Jahre elektronischer geworden ist. Die Standardabweichung für das Attribut "Akustizität" nimmt im Laufe der Zeit zu, was darauf hindeutet, dass die Verteilung der Akustizitätswerte im Laufe der Zeit immer vielfältiger und unterschiedlicher wird. Elektronische Musik ersetzt akustische Musik also nicht, sondern kommt zusätzlich hinzu. Es könnte auch darauf hindeuten, dass die Definition oder Interpretation dessen, was als "akustische" Musik gilt, nuancierter und vielfältiger wird.
+
+\item{instrumentalness} Bei der Instrumentalität ist ein auf und ab zu sehen, ohne klaren Trend hinsichtlich wachsendem oder fallendem Instrumentalanteil. Die Standardabweichung bleibt konsistent hoch, was bedeutet, dass nach wie vor viele Lieder mit hohem als auch niedrigem Instrumentalanteil produziert werden.
+
+\item{liveness} Auch "Liveness" zeigt keinen eindeutigen Trend. Der Durchschnittswert ist relativ niedrig mit einer geringen Standardabweichung, was darauf hindeutet dass der Großteil der Musik nicht "live" aufgenommen wurde und immernoch wird.
+
+\item{valence} Die Valenz zeigt keinen konstanten Abstieg der Statistiken, aber einen Reduktion des Durchschnittswerts ab den 1940ern ähnlich zur danceability, was darauf hindeutet, dass die Musik seit dieser Zeit weniger positiv ist.
+
+\item{Tempo} Das Maximaltempo wird über die Jahre höher und das Minimaltempo wird niedriger während der Durchschnittswert relativ konstant im mittleren Bereich der Attributskala bleibt. Die Standardabweichung ist niedrig und konstant. Die meisten Lieder sind also weder langsam noch schnell, aber es wird über die Jahre immer wieder mit neuen Tempo-Rekorden experimentiert.
+
+\item{Duration} (Dauer): Die Dauer zeigt einen starken Anstieg des Maximalwertes. Minimal- und Durchschnittswerte bleiben relativ konsistent und gering, genauso wie die Standardabweichung, das heißt die Musik ist in Bezug auf die Dauer stabil.
+
+\item{Time signature} Der Anteil der Songs mit 4/4-Takt ist im Laufe der Zeit relativ stabil geblieben, die meisten Songs sind im 4/4-Takt, die Standardabweichung der Taktart ist gering und im Laufe der Zeit stabil, was darauf hindeutet, dass die meisten Songs hauptsächlich im 4/4-Takt sind.
+\end{itemize}
+
+Insgesamt hat es den Anschein, dass die Musik im Laufe der Jahre energiegeladener und etwas tanzbarer und lauter geworden ist, wobei die durchschnittliche Tanzbarkeit und das Energieniveau allmählich gestiegen sind. Die durchschnittliche Akustik und Instrumentalität schwanken. Die Musik scheint aber insgesamt zu mehr elektronischen oder synthetischen Klängen zu tendieren, da sich der Anteil der akustischen Musik über die Jahre eindeutig verringert. Für die Attribute deren Durchschnittswert einem klaren Trend folgt, also der relative Rückgang akustischer Elemente und der Anstieg der Energie, lässt sich auch ein Anstieg in der Standardabweichung, also der Diversität in der Ausprägung des Attributs feststellen.
 
 \section{Ease of Use}
 
@@ -243,6 +320,9 @@ For papers published in translation journals, please give the English
 citation first, followed by the original foreign-language citation \cite{b6}.
 
 \begin{thebibliography}{00}
+\bibitem{d1} Pichl, Martin; Zangerle, Eva; Specht, Günther: "Towards a Context-Aware Music Recommendation Approach: What is Hidden in the Playlist Name?" in 15th IEEE International Conference on Data Mining Workshops (ICDM 2015), pp. 1360-1365, IEEE, Atlantic City, 2015.
+\bibitem{d2} Figueroa, Rodolfo. (2020). Spotify 12M Songs [Dataset]. Kaggle. https://www.kaggle.com/datasets/rodolfofigueroa/spotify-12m-songs
+
 \bibitem{b1} G. Eason, B. Noble, and I. N. Sneddon, ``On certain integrals of Lipschitz-Hankel type involving products of Bessel functions,'' Phil. Trans. Roy. Soc. London, vol. A247, pp. 529--551, April 1955.
 \bibitem{b2} J. Clerk Maxwell, A Treatise on Electricity and Magnetism, 3rd ed., vol. 2. Oxford: Clarendon, 1892, pp.68--73.
 \bibitem{b3} I. S. Jacobs and C. P. Bean, ``Fine particles, thin films and exchange anisotropy,'' in Magnetism, vol. III, G. T. Rado and H. Suhl, Eds. New York: Academic, 1963, pp. 271--350.
