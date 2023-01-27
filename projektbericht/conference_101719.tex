@@ -112,7 +112,15 @@ Nach dieser Vorbereitung der Daten ist es nun möglich den left-join des Spotify
 Die Verbindung der Datensätze hat jedoch einen großen Datenverlust zur Folge. Nach der Vorverarbeitung der einzelnen Datensätze sind beim Spotify 1.2M+ Songs Datensatz noch ca. 1,194,000 und beim Spotify Playlist Datensatz noch ca. 2,795,000 unterschiedliche Songs übrig. Nach dem join sind jedoch nur noch ca. 210,000 unterschiedliche Songs übrig. Die Gründe dafür sind recht unterschiedlich. Zum einen gibt es natürlich Songs, die in dem Spotify Playlist Datensatz vorkommen, jedoch nicht im Spotify 1.2M+ Songs Datensatz. Ein anderer Grund sind die Differenzen in der Bezeichnung der Werte der gemeinsame Schlüssel \textit{track} und \textit{artist}. Auf Spotify gibt es sehr häufig Songs, welche zwar einen bestimmen Artisten haben, jedoch ein anderer User dieser Song hochgeladen hat. Somit existiert zwar dieser Song, der Schlüssel \textit{artist} stimmt aber nicht überein. Generell werden zu jedem bekannten Song viele Unterschiedliche Versionen von vielen Nutzern hochgeladen. So gibt es von einem Song eine offizielle Version, ein Radio-Edit, eine Live-Version und verschiedene Remix. Auch Features mit anderen Artisten bringen häufig Probleme. Somit ist es möglich, dass ein Song im einen Datensatz die Form \textit{"song\_titel"} hat und im anderen \textit{"song\_titel (feat. artist2)"}. Im Spotify 1.2M+ Songs Datensatz sind die einzelnen Artisten als Liste gespeichert. Beim Spotify Playlist Datensatz sind diese zusammen als String gespeichert. Daraus entsteht das Problem, dass die Artisten im Playlist Datensatz die Form \textit{"artist1, artist2 and artist3"} bzw. \textit{"artist1 \& artist2"} haben können. Eine Teilung an Kommata ist aber auch nicht möglich, da es Artisten gibt, welche Kommata in ihrem offiziellen Namen haben. Somit wird die Schnittmenge der beiden Schlüsselmengen noch kleiner.
 
 \section{Analyse und Interpretation}
+In diesem Kapitel werfen wir einen Blick auf interessante Statistiken der Musik auf Spotify. Speziell werden wir uns anschauen wie sich Musik im Laufe der Jahre verändert, und welche Eigenschaften beliebte Lieder haben.
 \subsection{Entwicklung der Musik über die Zeit}
+Abbildung \ref{songs_per_year} zeigt wie viele Lieder nach dem Datenverlust pro Jahr übrig bleiben. Wir stellen fest, dass es für einige Jahre keine Einträge mehr gibt, und dass generell viel weniger ältere als moderne Lieder für unsere Analyse zur Verfügung stehen. Für die folgende Analyse ist es also wichtig zu erwähnen, dass die Ergebnisse für ferner in der Vergangenheit liegende Musik weniger zuverlässig sind.
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{images/songs_per_year.png}
+\caption{Eine logarithmisch skalierte Darstellung der Anzahl der Lieder pro Jahr.}
+\label{songs_per_year}
+\end{figure*}
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{images/over_time.png}
@@ -153,6 +161,7 @@ Insgesamt erweckt die Grafik den Anschein, dass die Musik im Laufe der Jahre ene
 Das Ziel in diesem Abschnitt besteht darin, die Statistiken der Attribute durchschnittlicher Lieder und Künstler mit den Statistiken populärer Lieder Künstler zu vergleichen, um herauszufinden was Popularität ausmacht.
 In keinem der beiden Datensätzen gibt es Informationen über die Beliebtheit, weshalb wir zunächst ein Beliebtwert für jeden Künstler und für jeden Song wie folgt ausrechnen: Es wird gezählt wie oft das gegebene Lied/ der gegebene Künstler in Playlisten aufgenommen wurde. Das gibt dann einen Schätzwert für die Popularität. 
 In Tabelle \ref{tab:topsongs} sieht man die 10 Lieder die am häufigsten in Playlisten vorkommen, und Tabelle \ref{tab:topartists} zeigt die top 10 Künstler die am häufigsten in Playlisten aufgenommen wurden.
+Abbildung \ref{popularity_time} zeigt wie oft im Durchschnitt ein Lied welches im gegebenen Jahr veröffentlicht wurde, in Playlists erschien. Es lässt sich feststellen, dass besonders Musik aus den letzten Jahren sehr populär ist.
 
 \begin{table}[h]
 \centering
@@ -202,12 +211,19 @@ Bruce Springsteen & 2131 \\ [1ex]
 
 \begin{figure*}[t]
 \centering
+\includegraphics[width=\textwidth]{images/popularity_per_year.png}
+\caption{Durchschnittliche Beliebtheit der im gegebenen Jahr veröffentlichten Musik.}
+\label{popularity_time}
+\end{figure*}
+
+\begin{figure*}[t]
+\centering
 \includegraphics[width=\textwidth]{images/pop_tracks.png}
 \caption{Vergleich des Durchschnittswerts und der Standardabweichungen verschiedener Attribute der den Top 100 beliebtesten Songs mit allen Songs. Rechts (grün) sind die populären Lieder dargestellt, und links(grau) sieht man die durchschnittlichen Lieder. Da die Attribute unterschiedliche Wertebereiche haben, werden die Durchschnittswerte und die Standardabweichungen jeweils mit dem globalen Maximum und dem globalen Minimum des Attributs skaliert.}
 \label{popular tracks}
 \end{figure*}
 
-In Abbildung \ref{popular tracks} wird deutlich, dass die Durchschnittswerte der populären Songs wesentlich niedriger für "Danceability", für die Lautstärke, für akustische Elemente, für Tempo und für die Taktart. Das heißt populäre Lieder eignen sich im Durchschnitt weniger zum Tanzen, sind viel leiser, langsamer, und haben einen geringeren akustischen Anteil. Sie haben weniger Schläge pro Takt. Populäre Songs sind jedoch energetischer.
+In Abbildung \ref{popular tracks} wird deutlich, dass die Durchschnittswerte der populären Songs wesentlich niedriger für "Danceability", für die Lautstärke, für akustische Elemente, für Tempo und für die Taktart. Das heißt populäre Lieder eignen sich im Durchschnitt weniger zum Tanzen, sind viel leiser, langsamer, und haben einen geringeren akustischen Anteil. Sie haben weniger Schläge pro Takt. Populäre Songs sind jedoch energetischer, was logisch erscheint, da die durchschnittliche Energie (siehe Abb. \ref{time}) und die durchschnittliche Beliebtheit (siehe Abb. \ref{popularity_time}) in den letzten Jahren besonders hoch ist.
 Außerdem kann man erkennen, dass die Standardabweichung für die top 100 beliebtesten Lieder in fast allen Attributen geringer ist, was darauf hindeutet, dass sich populäre Lieder untereinander in ihren Attributen ähnlicher sind.
 Man kann auf Grund dieser Resultate populäre Lieder (Lieder die oft in Playlisten auf Spotify aufgenommen werden) wie folgt charakterisieren: sie haben trotz geringerem Tempo und geringer Lautstärke viel Energie leicht positiver, und generell weniger Variation in den Attributen. Eventuell eignen sie sich also eher zum Hören im Hintergrund. 
 
