@@ -27,14 +27,92 @@ maria.gogolev@uni-jena.de}
 \maketitle
 
 \begin{abstract}
-This document is a model and instructions for \LaTeX.
-This and the IEEEtran.cls file define the components of your paper [title, text, heads, etc.]. *CRITICAL: Do Not Use Symbols, Special Characters, Footnotes, 
-or Math in Paper Title or Abstract.
+In diesem Projektbericht wurden zwei Datensätze von Kaggle verwendet, verbunden und anschließend analysiert. Dabei werden Merkmale von Songs durch die Einteilung in Playlisten betrachtet. Mittels Erstellung einer neuen Metrik können Eigenschaften populärer Songs bestimmt und Veränderungen im Laufe der Zeit verglichen werden.
 \end{abstract}
 
-\begin{IEEEkeywords}
-component, formatting, style, styling, insert
-\end{IEEEkeywords}
+% \begin{IEEEkeywords}
+% component, formatting, style, styling, insert
+% \end{IEEEkeywords}
+
+\section{Datensätze}
+
+Als Datensätze wurden zwei von kaggle.com verwendet:
+\begin{enumerate}
+    \item Spotify 1.2M+ Songs\footnote{siehe https://www.kaggle.com/datasets/rodolfofigueroa/spotify-12m-songs}
+    \item Spotify Playlists\footnote{siehe https://www.kaggle.com/datasets/andrewmvd/spotify-playlists}
+\end{enumerate}
+Ersteres besteht, wie der Name es schon verdeutlicht, aus ca. 1.2 Millionen (1,204,025 genau) unterschiedlichen Spotify Songs. Zu jedem Song sind dabei 24 Eigenschaften gegeben. Eine Auflistung aller Eigenschaften mit Beschreibung ist in Tabelle \eqref{tab:song_feat} zu finden. Der Datensatz liegt als CSV vor umfasst ungefähr 346MB. Die Daten wurden dabei mittels der offiziellen Spotify-API generiert. Jeder Song kann mittels einer eindeutigen ID beschrieben werden. Durch eine GET-Anfrage auf \textit{https://api.spotify.com/v1/tracks/\{id\}} können Informationen zum Album, Songtitel, Artisten und Publikationsdatum extrahiert werden. Mittels zweiter GET-Anfrage auf \textit{https://api.spotify.com/v1/audio-features/\{id\}} können die restlichen Eigenschaften, wie \textit{danceability}, \textit{energy} oder \textit{liveness} bestimmt werden.
+
+\begin{table}[h]
+    \caption{Beschreibung der Spalten des Spotify 1.2M+ Songs Datensatz}
+    \begin{center}  
+    \begin{tabular}{ll}
+        Eigenschaft & Beschreibung \\ \hline
+        id & Song-ID \\
+        name & Songtitel \\
+        album & Albumtitel \\
+        album\_id &  Album-ID\\
+        artists & Liste der Artisten \\
+        artists\_ids & Liste der Artisten-IDs \\
+        track\_number & Tracknummer des Songs im Album \\
+        disc\_number & Albumnummer \\
+        explicit & Song ist explicit\\
+        danceability & Eignung des Songs zum tanzen ($\in [0,1]$) \\
+        energy & Intensität und Aktivität des Songs ($\in [0,1]$) \\
+        key & Tonart \\
+        loudness & Lautstärke (dB) \\
+        mode & Modus (Dur/Moll) \\
+        speechiness & Sprachanteil ($\in [0,1]$) \\
+        acousticness & Akustik eines Songs ($\in [0,1]$) \\
+        instrumentalness & Instrumentalanteil ($\in [0,1]$) \\
+        liveness & Wahrscheinlichkeit einer Liveübertragung ($\in [0,1]$) \\
+        valence & Wertigkeit ($\in [0,1]$, 0=negativ und 1=positiv) \\
+        tempo & Tempo (BPM) \\
+        duration\_ms & Dauer (ms) \\
+        time\_signature & Taktart \\
+        year & Veröffentlichungsjahr \\
+        release\_date & Veröffentlichungsdatum (YYYY-MM-DD)
+    \end{tabular}
+    \end{center}
+    \label{tab:song_feat}
+\end{table}
+
+Der Datensatz ermöglicht es Songs anhand von Eigenschaften zu sortieren. Beispielsweise kann man verschiedene Eigenschaften wie die \textit{danceability}, \textit{valence} oder \textit{energy} der Songs über die Zeit betrachten. Eine andere exemplarische Anwendungsmöglichkeit ist ein Algorithmus zur Songempfehlung, bei dem man Songs mit ähnlichen Eigenschaften versucht zu verbinden. 
+
+Um die Songs besser unterteilen zu können wurde in dieser Analyse ein zweiter Datensatz verwendet, der Spotify Playlist Datensatz. Dieser besteht aus ca. 2.8 Millionen unterschiedlichen Songs, die in ca. 162 Tausend Playlists von ungefähr 16 Tausend User eingeteilt sind. Trotz einer Größe von ca. 1.8 GB ist der Aufbau des Datensatzes recht einfach. Wie in Tabelle \eqref{tab:feat_playlist} erkennbar besitzt der Datensatz nur vier Spalten. Dabei hat ein User mit einer \textit{user\_id} eine Playlist mit der Playlistbezeichnung \textit{playlistname} angelegt. Songs, bestimmt durch den \textit{trackname} und \textit{artistname}, können somit einer Playlist zugehörig sein. Selbstverständlich können dabei Songs mehrfach vorkommen, wenn sie beispielsweise in unterschiedlichen Playlists enthalten sind oder in einer Playlist sogar mehrfach aufkommen.
+
+\begin{table}[h]
+    \caption{Beschreibung der Spalten des Spotify Playlist Datensatz}
+    \begin{center}  
+    \begin{tabular}{ll}
+        Eigenschaft & Beschreibung \\ \hline
+        user\_id & User-ID eines Spotify Nutzers \\
+        artistname & Name des Artisten \\
+        trackname & Songtitel \\
+        playlistname & Playlistbezeichnung
+    \end{tabular}
+    \end{center}
+    \label{tab:feat_playlist}
+\end{table}
+
+Mögliche Anwendungsfelder dieser Playlist ist beispielsweise die Untersuchung der Popularität einiger Songs durch die Anzahl der Aufkommen des Liedes in unterschiedlichen Playlisten. Mehr dazu später. 
+
+Um die Songeigenschaften des ersten Datensatzes mit den Playlisteinteilungen des zweiten Datensatzes zu verbinden, müssen die beiden Datensätze verbunden werden. Dafür versuchen wir an den Playlist-Datensatz mittels left-join die Eigenschaften anzuheften. Dabei sollen die gemeinsamen Schlüssel der Songtitel mit Artisten sein. Um dies zu erreichen müssen jedoch vorher die Daten vorbereitet werden. Dafür wurden zunächst die Spaltennamen \textit{name} und \textit{artists}, beim Spotify 1.2M+ Datensatz, bzw. \textit{trackname} und \textit{artistname}, beim Spotify Playlistdatensatz, vereinfacht und in \textit{track} und \textit{artist} umbenannt. Somit sind die beiden Schlüssel gleich bezeichnet. 
+
+Der nächste Schritt ist es die Liste von Artisten, welche in jeder Zeile der \textit{artist}-Spalte beim Spotify 1.2M+ Songs Datensatz zu finden ist, aufzusplitten. Diese haben nämlich eine folgende Form:
+
+$$
+    [\text'\text{artist}_1\text', \text'\text{artist}_2\text', \dots, \text'\text{artist}_n\text'].
+$$
+
+Ziel ist es, dass die Zeile des Datensatzes $n$-Mal repliziert wird und in jeder neuen Zeile nur der jeweilige $\text{artist}_i$ steht. Zum Schluss wurden die Datentypen aller Spalten angepasst und unrealistische Werte (z.B. Veröffentlichungsjahr 0) aussortiert. 
+
+Nach dieser Vorbereitung der Daten ist es nun möglich den left-join des Spotify 1.2M+ Songs Datensatz an den Spotify Playlist Datensatz über die gemeinsame Schlüssel \textit{track} und \textit{artist} durchzuführen. Zur Vereinfachung der späteren Analyse wurde anschließend alle Zeilen mit \textit{NA}-Werten aus dem verbundenen Datensatz entfert. Somit werden auch alle Zeilen entfert, bei dem der Spotify Playlist Datensatz keine Werte für Songs aus dem Spotify 1.2M+ Songs Datensatz findet.
+
+Die Verbindung der Datensätze hat jedoch einen großen Datenverlust zur Folge. Nach der Vorverarbeitung der einzelnen Datensätze sind beim Spotify 1.2M+ Songs Datensatz noch ca. 1,194,000 und beim Spotify Playlist Datensatz noch ca. 2,795,000 unterschiedliche Songs übrig. Nach dem join sind jedoch nur noch ca. 210,000 unterschiedliche Songs übrig. Die Gründe dafür sind recht unterschiedlich. Zum einen gibt es natürlich Songs, die in dem Spotify Playlist Datensatz vorkommen, jedoch nicht im Spotify 1.2M+ Songs Datensatz. Ein anderer Grund sind die Differenzen in der Bezeichnung der Werte der gemeinsame Schlüssel \textit{track} und \textit{artist}. Auf Spotify gibt es sehr häufig Songs, welche zwar einen bestimmen Artisten haben, jedoch ein anderer User dieser Song hochgeladen hat. Somit existiert zwar dieser Song, der Schlüssel \textit{artist} stimmt aber nicht überein. Generell werden zu jedem bekannten Song viele Unterschiedliche Versionen von vielen Nutzern hochgeladen. So gibt es von einem Song eine offizielle Version, ein Radio-Edit, eine Live-Version und verschiedene Remix. Auch Features mit anderen Artisten bringen häufig Probleme. Somit ist es möglich, dass ein Song im einen Datensatz die Form \textit{"song\_titel"} hat und im anderen \textit{"song\_titel (feat. artist2)"}. Im Spotify 1.2M+ Songs Datensatz sind die einzelnen Artisten als Liste gespeichert. Beim Spotify Playlist Datensatz sind diese zusammen als String gespeichert. Daraus entsteht das Problem, dass die Artisten im Playlist Datensatz die Form \textit{"artist1, artist2 and artist3"} bzw. \textit{"artist1 \& artist2"} haben können. Eine Teilung an Kommata ist aber auch nicht möglich, da es Artisten gibt, welche Kommata in ihrem offiziellen Namen haben. Somit wird die Schnittmenge der beiden Schlüsselmengen noch kleiner.
+
+
+
 
 \section{Introduction}
 This document is a model and instructions for \LaTeX.
