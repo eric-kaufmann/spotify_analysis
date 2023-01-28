@@ -27,12 +27,12 @@ maria.gogolev@uni-jena.de}
 \maketitle
 
 \begin{abstract}
-In diesem Projektbericht wurden zwei Datensätze von Kaggle verwendet, verbunden und anschließend analysiert. Dabei werden Merkmale von Songs durch die Einteilung in Playlisten betrachtet. Mittels Erstellung einer neuen Metrik können Eigenschaften populärer Songs bestimmt und Veränderungen im Laufe der Zeit verglichen werden.
+In diesem Projektbericht wurden zwei Spotify-Datensätze von Kaggle verbunden und anschließend analysiert. Dabei wurden Merkmale von Songs durch die Einteilung in Playlisten betrachtet. Mittels Erstellung einer neuen Metrik zur Bestimmung der Populatität können Eigenschaften populärer Songs bestimmt und verglichen werden. Zusätzlich wurden verschiedene Eigenschaften im laufe der Jahre (1900 - 2020) beurteilt. Somit konnte gezeigt werden, dass Musik energetischer und intensiver wurde und dies große Populatität brachte.
 \end{abstract}
 
-% \begin{IEEEkeywords}
-% component, formatting, style, styling, insert
-% \end{IEEEkeywords}
+\section{Einleitung}
+
+Spotify hat sich über die Jahre zu den größten Musik-Streaming-Anbieter der Welt hochgearbeitet und genießt eine sehr große Popularität. Es gibt mittlerweile kaum noch ein Song, welcher nicht auf Spotify zu finden ist. Somit gab es über die letzten Jahre eine Revolution der Musikindustrie. Während man vor einigen Jahren noch Alben der Lieblingskünstler physisch kaufen musste kann man nun für wenig Geld im Monat Musik aller Artisten aus aller Welt hören. Die selbstgebrannten CDs mit der Lieblingsmusik verschiedener Künstler wurden durch Spotify Playlisten ersetzt, welche man ohne Aufwand teilen und erstellen kann. Ein Merkmal, welches Spotify von seinen Konkurrenten abhebt, ist die sehr gute Empfehlung neuer Songs. Anhand der Songs, welche man gerne hört, findet Spotify ähnliche Musik, sodass man immer mit etwas Neuem konfrontiert wird. Um dies zu erreichen werden die Eigenschaften der Lieder miteinander verglichen und Ähnlichkeiten hergestellt. Anhand der Eigenschaften kann man herausfinden, was populäre Songs auszeichnet oder was besonders an Künstlern ist. In einer Analyse mittels PySpark\footnote{Projekt verfügbar unter https://github.com/eric-kaufmann/spotify\_analysis} versuchen wir herauszufinden, was diese Eigenschaften sind und wie sich diese über die Zeit verändert haben.
 
 \section{Datensätze}
 
@@ -107,14 +107,14 @@ $$
 
 Ziel ist es, dass die Zeile des Datensatzes $n$-Mal repliziert wird und in jeder neuen Zeile nur der jeweilige $\text{artist}_i$ steht. Zum Schluss wurden die Datentypen aller Spalten angepasst und unrealistische Werte (z.B. Veröffentlichungsjahr 0) aussortiert. 
 
-Nach dieser Vorbereitung der Daten ist es nun möglich den left-join des Spotify 1.2M+ Songs Datensatz an den Spotify Playlist Datensatz über die gemeinsame Schlüssel \textit{track} und \textit{artist} durchzuführen. Zur Vereinfachung der späteren Analyse wurde anschließend alle Zeilen mit \textit{NA}-Werten aus dem verbundenen Datensatz entfert. Somit werden auch alle Zeilen entfert, bei dem der Spotify Playlist Datensatz keine Werte für Songs aus dem Spotify 1.2M+ Songs Datensatz findet.
+Nach dieser Vorbereitung der Daten ist es nun möglich den left-join des Spotify 1.2M+ Songs Datensatz an den Spotify Playlist Datensatz über die gemeinsame Schlüssel \textit{track} und \textit{artist} durchzuführen. Zur Vereinfachung der späteren Analyse wurde anschließend alle Zeilen mit \textit{NA}-Werten aus dem verbundenen Datensatz entfert. Somit werden alle Zeilen entfert, welche im Spotify Playlist Datensatz keine Verbindung zum Spotify 1.2M+ Songs Datensatz gefunden haben.
 
-Die Verbindung der Datensätze hat jedoch einen großen Datenverlust zur Folge. Nach der Vorverarbeitung der einzelnen Datensätze sind beim Spotify 1.2M+ Songs Datensatz noch ca. 1,194,000 und beim Spotify Playlist Datensatz noch ca. 2,795,000 unterschiedliche Songs übrig. Nach dem join sind jedoch nur noch ca. 210,000 unterschiedliche Songs übrig. Die Gründe dafür sind recht unterschiedlich. Zum einen gibt es natürlich Songs, die in dem Spotify Playlist Datensatz vorkommen, jedoch nicht im Spotify 1.2M+ Songs Datensatz. Ein anderer Grund sind die Differenzen in der Bezeichnung der Werte der gemeinsame Schlüssel \textit{track} und \textit{artist}. Auf Spotify gibt es sehr häufig Songs, welche zwar einen bestimmen Artisten haben, jedoch ein anderer User dieser Song hochgeladen hat. Somit existiert zwar dieser Song, der Schlüssel \textit{artist} stimmt aber nicht überein. Generell werden zu jedem bekannten Song viele Unterschiedliche Versionen von vielen Nutzern hochgeladen. So gibt es von einem Song eine offizielle Version, ein Radio-Edit, eine Live-Version und verschiedene Remix. Auch Features mit anderen Artisten bringen häufig Probleme. Somit ist es möglich, dass ein Song im einen Datensatz die Form \textit{"song\_titel"} hat und im anderen \textit{"song\_titel (feat. artist2)"}. Im Spotify 1.2M+ Songs Datensatz sind die einzelnen Artisten als Liste gespeichert. Beim Spotify Playlist Datensatz sind diese zusammen als String gespeichert. Daraus entsteht das Problem, dass die Artisten im Playlist Datensatz die Form \textit{"artist1, artist2 and artist3"} bzw. \textit{"artist1 \& artist2"} haben können. Eine Teilung an Kommata ist aber auch nicht möglich, da es Artisten gibt, welche Kommata in ihrem offiziellen Namen haben. Somit wird die Schnittmenge der beiden Schlüsselmengen noch kleiner.
+Die Verbindung der Datensätze hat jedoch einen großen Datenverlust zur Folge. Nach der Vorverarbeitung der einzelnen Datensätze sind beim Spotify 1.2M+ Songs Datensatz noch ca. 1,194,000 und beim Spotify Playlist Datensatz noch ca. 2,795,000 unterschiedliche Songs übrig. Nach dem join sind jedoch nur noch ca. 210,000 unterschiedliche Songs übrig. Die Gründe dafür sind recht unterschiedlich. Zum einen gibt es natürlich Songs, die in dem Spotify Playlist Datensatz vorkommen, jedoch nicht im Spotify 1.2M+ Songs Datensatz. Ein anderer Grund sind die Differenzen in der Bezeichnung der Werte der gemeinsame Schlüssel \textit{track} und \textit{artist}. Auf Spotify gibt es sehr häufig Songs, welche zwar einen bestimmen Artisten haben, jedoch ein anderer User dieser Song hochgeladen hat. Somit existiert zwar dieser Song, der Schlüssel \textit{artist} stimmt aber nicht überein. Generell werden zu jedem bekannten Song viele unterschiedliche Versionen von vielen Nutzern hochgeladen. So gibt es von einem Song eine offizielle Version, ein Radio-Edit, eine Live-Version und verschiedene Remix. Auch Features mit anderen Artisten bringen häufig Probleme. Somit ist es möglich, dass ein Song im einen Datensatz die Form \textit{"song\_titel"} hat und im anderen \textit{"song\_titel (feat. artist2)"}. Im Spotify 1.2M+ Songs Datensatz sind die einzelnen Artisten als Liste gespeichert. Beim Spotify Playlist Datensatz sind diese zusammen als String gespeichert. Daraus entsteht das Problem, dass die Artisten im Playlist Datensatz die Form \textit{"artist1, artist2 and artist3"} bzw. \textit{"artist1 \& artist2"} haben können. Eine Teilung an Kommata ist aber auch nicht möglich, da es Artisten gibt, welche Kommata in ihrem offiziellen Namen haben. Somit wird die Schnittmenge der beiden Schlüsselmengen noch kleiner. Mit den restlichen Daten können jedoch Einsichten in Eigenschaften von Songs gegeben werden.
 
 \section{Analyse und Interpretation}
 In diesem Kapitel werfen wir einen Blick auf interessante Statistiken der Musik auf Spotify. Speziell werden wir uns anschauen wie sich Musik im Laufe der Jahre verändert, und welche Eigenschaften beliebte Lieder haben.
 \subsection{Entwicklung der Musik über die Zeit}
-Abbildung \ref{songs_per_year} zeigt wie viele Lieder nach dem Datenverlust pro Jahr übrig bleiben. Wir stellen fest, dass es für einige Jahre keine Einträge mehr gibt, und dass generell viel weniger ältere als moderne Lieder für unsere Analyse zur Verfügung stehen. Für die folgende Analyse ist es also wichtig zu erwähnen, dass die Ergebnisse für ferner in der Vergangenheit liegende Musik weniger zuverlässig sind.
+Abbildung \eqref{songs_per_year} zeigt wie viele Lieder nach dem Datenverlust pro Jahr übrig bleiben. Wir stellen fest, dass es für einige Jahre keine Einträge mehr gibt, und dass generell viel weniger ältere als moderne Lieder für unsere Analyse zur Verfügung stehen. Für die folgende Analyse ist es also wichtig zu erwähnen, dass die Ergebnisse für ferner in der Vergangenheit liegende Musik weniger zuverlässig sind.
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{images/songs_per_year.png}
@@ -127,47 +127,45 @@ Abbildung \ref{songs_per_year} zeigt wie viele Lieder nach dem Datenverlust pro 
 \caption{Entwicklung der Musik-Attribute von 1900 bis 2020. Die in der Mitte verlaufende Linie ist der Durchschnittswert, die obere Linie das Maximum, die untere Linie das Minimum und der grüne Bereich ist die Standardabweichung im gegebenen Jahr.}
 \label{time}
 \end{figure*}
-Aus den vorliegenden Daten geht hervor, dass sich die Musik im Laufe der Jahre in Bezug auf verschiedene Attribute deutlich verändert hat, und gewisse Trends ersichtlich sind. Die Analyse bezieht sich auf Abbildung \ref{time}. Im Folgenden werden nicht alle Attribute aufgegriffen, da bei ihnen Statistiken wie Standardabweichung und Durchschnittswert weniger aussagekräftig sind (bspw "Key" also der Notenschlüssel).
+Aus den vorliegenden Daten geht hervor, dass sich die Musik im Laufe der Jahre in Bezug auf verschiedene Attribute deutlich verändert hat, und gewisse Trends ersichtlich sind. Die Analyse bezieht sich auf Abbildung \eqref{time}. Im Folgenden werden nicht alle Attribute aufgegriffen, da bei ihnen Statistiken wie Standardabweichung und Durchschnittswert weniger aussagekräftig sind (beispielsweise \textit{key} also der Notenschlüssel).
 
 \begin{itemize}
-\item{Danceability} Beginnend mit der danceability sehen wir, dass der Minimal- und Maximalwert über die Jahre leicht auseinander gehen. Nach einem Absinken der danceability in den 1940 Jahren zeigt der Durchschnittswert wieder einen leichten Aufwärtstrend. Die Standardabweichung bleibt relativ stabil über die Zeit.
+\item{\textit{danceability}} Beginnend mit der danceability sehen wir, dass der Minimal- und Maximalwert über die Jahre leicht auseinander gehen. Nach einem Absinken der \textit{danceability} in den 1940 Jahren zeigt der Durchschnittswert wieder einen leichten Aufwärtstrend. Die Standardabweichung bleibt relativ stabil über die Zeit.
 
-\item{Energy} Auch bei der Energie ist ein ähnlicher Trend zu beobachten: Der Minimalwert bleibt relativ konstant, der Maximalwert steigt stetig an, der Durchschnittswert zeigt einen Aufwärtstrend und die Standardabweichung nimmt im Laufe der Zeit zu. Dies deutet darauf hin, dass die Musik im Laufe der Jahre energiegeladener geworden ist, es gleichzeitig aber mehr Diversität in diesem Attribut gibt.
+\item{\textit{energy}} Auch bei der Energie ist ein ähnlicher Trend zu beobachten: Der Minimalwert bleibt relativ konstant, der Maximalwert steigt stetig an, der Durchschnittswert zeigt einen Aufwärtstrend und die Standardabweichung nimmt im Laufe der Zeit zu. Dies deutet darauf hin, dass die Musik im Laufe der Jahre energiegeladener geworden ist, es gleichzeitig aber mehr Diversität in diesem Attribut gibt.
 
-\item{Loudness} Bei der Lautstärke ist ein sinkender Minimalwert und eine leichre Zunahme des Maximalwerts und Durchshcnittswertes zu verzeichnen. Musik wird also leicht lauter.
+\item{\textit{loudness}} Bei der Lautstärke ist ein sinkender Minimalwert und eine leichte Zunahme des Maximalwerts und Durchschnittswertes zu verzeichnen. Musik wird also leicht lauter.
 
-\item{Mode} Der Durchschnittswert des Modus bleibt über die gesamte Zeit überhalb von 0.5, was aussagt, dass stets mehr Musik in Dur produziert wird als in Moll, wobei ein leichter Abstieg des Durchschnittswertes in den letzten jahren zu verzeichnen ist. Es wurde also in den letzten Jahren mehr in Moll produziert.
+\item{\textit{mode}} Der Durchschnittswert des Modus bleibt über die gesamte Zeit überhalb von $0.5$, was aussagt, dass stets mehr Musik in Dur produziert wird als in Moll, wobei ein leichter Abstieg des Durchschnittswertes in den letzten Jahren zu verzeichnen ist. Es wurde also in den letzten Jahren mehr in Moll produziert.
 
-\item{Speechiness} Das Minimum des Sprachanteils bleibt nahe bei 0, da Instrumentalmusik früher wie auch heute relevant ist. Der anfangs geringe Maximalwert entwickelt sich hingegen nach oben. Durchschnittswert und Standardabweichung bleiben gering was darauf hindeutet das der Großteil der Musik nach wie vor instrumental ist. Ansonsten zeigt die Sprachlichkeit keinen starken Trend.
+\item{\textit{speechiness}} Das Minimum des Sprachanteils bleibt nahe bei $0$, da Instrumentalmusik früher wie auch heute relevant ist. Der anfangs geringe Maximalwert entwickelt sich hingegen nach oben. Durchschnittswert und Standardabweichung bleiben gering was darauf hindeutet das der Großteil der Musik nach wie vor instrumental ist. Ansonsten zeigt die \textit{speechiness} keinen starken Trend.
 
-\item{Acousticness} Die Akustizität zeigt über die Jahre einen Rückgang der Durchschnittswerte, was darauf hindeutet, dass die Musik im Laufe der Jahre elektronischer geworden ist. Die Standardabweichung für das Attribut "Akustizität" nimmt im Laufe der Zeit zu, was darauf hindeutet, dass die Verteilung der Akustizitätswerte im Laufe der Zeit immer vielfältiger und unterschiedlicher wird. Elektronische Musik ersetzt akustische Musik also nicht, sondern kommt zusätzlich hinzu. 
+\item{\textit{acousticness}} Die Akustik zeigt über die Jahre einen Rückgang der Durchschnittswerte, was darauf hindeutet, dass die Musik im Laufe der Jahre elektronischer geworden ist. Die Standardabweichung der \textit{acousticness} nimmt im Laufe der Zeit zu, was darauf hindeutet, dass die Verteilung der Akustizitätswerte im Laufe der Zeit immer vielfältiger und unterschiedlicher wird. Elektronische Musik ersetzt akustische Musik also nicht, sondern kommt zusätzlich hinzu. 
 
-\item{instrumentalness} Bei der Instrumentalität ist ein auf und ab zu sehen, ohne klaren Trend hinsichtlich wachsendem oder fallendem Instrumentalanteil. Die Standardabweichung bleibt konsistent hoch, was bedeutet, dass nach wie vor viele Lieder mit hohem als auch niedrigem Instrumentalanteil produziert werden.
+\item{\textit{instrumentalness}} Bei der Instrumentalität ist ein Auf-und-Ab zu sehen, ohne klaren Trend hinsichtlich wachsendem oder fallendem Instrumentalanteil. Die Standardabweichung bleibt konsistent hoch, was bedeutet, dass nach wie vor viele Lieder mit hohem als auch niedrigem Instrumentalanteil produziert werden.
 
-\item{liveness} Auch "Liveness" zeigt keinen eindeutigen Trend. Der Durchschnittswert ist relativ niedrig mit einer geringen Standardabweichung, was darauf hindeutet dass der Großteil der Musik nicht live übertragen wurde.
+\item{\textit{liveness}} Auch \textit{liveness} zeigt keinen eindeutigen Trend. Der Durchschnittswert ist relativ niedrig mit einer geringen Standardabweichung, was darauf hindeutet dass der Großteil der Musik nicht live übertragen wurde.
 
-\item{valence} Die Valenz zeigt keinen konstanten Abstieg der Statistiken, aber einen Reduktion des Durchschnittswerts ab den 1940ern ähnlich zur "Danceability", was darauf hindeutet, dass die Musik seit dieser Zeit weniger positiv ist.
+\item{\textit{valence}} Die Valenz zeigt keinen konstanten Abstieg der Statistiken, aber einen Reduktion des Durchschnittswerts ab den 1940ern ähnlich zur \textit{danceability}, was darauf hindeutet, dass die Musik seit dieser Zeit weniger positiv ist.
 
-\item{Tempo} Das Maximaltempo wird über die Jahre höher und das Minimaltempo wird niedriger während der Durchschnittswert relativ konstant im mittleren Bereich der Attributskala bleibt. Die Standardabweichung ist niedrig und konstant. Die meisten Lieder sind also weder langsam noch schnell, aber es wird über die Jahre immer wieder mit neuen Tempo-Rekorden experimentiert.
+\item{\textit{tempo}} Das Maximaltempo wird über die Jahre höher und das Minimaltempo wird niedriger während der Durchschnittswert relativ konstant im mittleren Bereich der Attributskala bleibt. Die Standardabweichung ist niedrig und konstant. Die meisten Lieder sind also weder langsam noch schnell, aber es wird über die Jahre immer wieder mit neuen Tempo-Rekorden experimentiert.
 
-\item{Duration} Die Dauer zeigt einen starken Anstieg des Maximalwertes. Minimal- und Durchschnittswerte bleiben relativ konsistent und gering, genauso wie die Standardabweichung. Die Musik ist in Bezug auf die Dauer eher stabil und vorhersehbar.
+\item{\textit{duration}} Die Dauer zeigt einen starken Anstieg des Maximalwertes. Minimal- und Durchschnittswerte bleiben relativ konsistent und gering, genauso wie die Standardabweichung. Die Musik ist in Bezug auf die Dauer eher stabil und vorhersehbar. 
 
-\item{Time signature} Der Anteil der Songs mit 4/4-Takt ist im Laufe der Zeit relativ stabil geblieben, die meisten Songs sind im 4/4-Takt, die Standardabweichung der Taktart ist gering und im Laufe der Zeit stabil, was darauf hindeutet, dass die meisten Songs, nach wie vor, hauptsächlich 4 Schläge pro Takt haben.
+\item{\textit{time signature}} Der Anteil der Songs mit $\frac 4 4$-Takt ist im Laufe der Zeit relativ stabil und stark geblieben. Die Standardabweichung der Taktart ist klein und bleibt im Laufe der Zeit stabil, was darauf hindeutet, dass die meisten Songs hauptsächlich 4 Schläge pro Takt haben.
 \end{itemize}
 
 Insgesamt erweckt die Grafik den Anschein, dass die Musik im Laufe der Jahre energiegeladener und etwas tanzbarer und lauter geworden ist, wobei die durchschnittliche Tanzbarkeit und das Energieniveau allmählich gestiegen sind. Die durchschnittliche Akustik und Instrumentalität schwanken. Die Musik scheint aber insgesamt zu mehr elektronischen oder synthetischen Klängen zu tendieren, da sich der Anteil der akustischen Musik über die Jahre eindeutig verringert. Für die Attribute deren Durchschnittswert einem klaren Trend folgt, also der relative Rückgang akustischer Elemente und der Anstieg der Energie, lässt sich auch ein Anstieg in der Standardabweichung, also der Diversität in der Ausprägung des Attributs feststellen.
 
 \subsection{Popularität}
 Das Ziel in diesem Abschnitt besteht darin, die Statistiken der Attribute durchschnittlicher Lieder und Künstler mit den Statistiken populärer Lieder Künstler zu vergleichen, um herauszufinden was Popularität ausmacht.
-In keinem der beiden Datensätzen gibt es Informationen über die Beliebtheit, weshalb wir zunächst ein Beliebtwert für jeden Künstler und für jeden Song wie folgt ausrechnen: Es wird gezählt wie oft das gegebene Lied/ der gegebene Künstler in Playlisten aufgenommen wurde. Das gibt dann einen Schätzwert für die Popularität. 
-In Tabelle \ref{tab:topsongs} sieht man die 10 Lieder die am häufigsten in Playlisten vorkommen, und Tabelle \ref{tab:topartists} zeigt die top 10 Künstler die am häufigsten in Playlisten aufgenommen wurden.
-Abbildung \ref{popularity_time} zeigt wie oft im Durchschnitt ein Lied welches im gegebenen Jahr veröffentlicht wurde, in Playlists erschien. Es lässt sich feststellen, dass besonders Musik aus den letzten Jahren sehr populär ist.
+In keinem der beiden Datensätzen gibt es Informationen über die Beliebtheit, weshalb wir eine neue Mektrik dafür einführen. Diese soll sowohl für jeden Künstler als auch für jeden Song gelten. Dabei wird gezählt wie oft ein gegebenes Lied beziehungsweise ein gegebener Künstler in unterschiedlichen Playlisten vorkommt. Mehrfache Aufkommen innerhalb einer Playlist werden nicht mitgerechnet. Das ergibt sich einen Schätzwert für die Popularität. Tabelle \eqref{tab:topsongs} zeigt die 10 populärsten Lieder und Tabelle \eqref{tab:topartists} 10 populärsten Künstler auf. Abbildung \eqref{popularity_time} zeigt wie oft im Durchschnitt ein Lied, welches im gegebenen Jahr veröffentlicht wurde, in Playlists erschien. Es lässt sich feststellen, dass besonders Songs aus den letzten Jahren eine hohe Popularität genießen.
 
 \begin{table}[h]
 \centering
 \begin{tabular}{c c c c} 
 \hline
-track & artist & count \\ [0.5ex] 
+Songtitel & Artist & Anzahl \\ [0.5ex] 
 \hline
 Ho Hey & The Lumineers & 1547 \\ 
 Kids & MGMT & 1319 \\ 
@@ -181,8 +179,7 @@ Creep & Radiohead & 1066 \\
 Summer & Calvin Harris & 1058 \\ [1ex] 
 \hline
 \end{tabular}
-
-\caption{Top 100 populärste Lieder}
+\caption{Top 100 der populärsten Lieder}
 \label{tab:topsongs}
 \end{table}
 
@@ -190,7 +187,7 @@ Summer & Calvin Harris & 1058 \\ [1ex]
 \centering
 \begin{tabular}{c c} 
 \hline
-artist & count \\ [0.5ex] 
+Artist & Anzahl \\ [0.5ex] 
 \hline
 Beyoncé & 3476 \\ 
 Radiohead & 3406 \\ 
@@ -204,7 +201,7 @@ The Strokes & 2189 \\
 Bruce Springsteen & 2131 \\ [1ex] 
 \hline
 \end{tabular}
-\caption{Top 100 populärste Künstler}
+\caption{Top 100 der populärsten Künstler}
 \label{tab:topartists}
 \end{table}
 \subsubsection{Vergleich populärer Lieder mit durchschnittlichen Liedern}
@@ -217,15 +214,17 @@ Bruce Springsteen & 2131 \\ [1ex]
 \end{figure*}
 
 \begin{figure*}[t]
-\centering
-\includegraphics[width=\textwidth]{images/pop_tracks.png}
-\caption{Vergleich des Durchschnittswerts und der Standardabweichungen verschiedener Attribute der den Top 100 beliebtesten Songs mit allen Songs. Rechts (grün) sind die populären Lieder dargestellt, und links(grau) sieht man die durchschnittlichen Lieder. Da die Attribute unterschiedliche Wertebereiche haben, werden die Durchschnittswerte und die Standardabweichungen jeweils mit dem globalen Maximum und dem globalen Minimum des Attributs skaliert.}
-\label{popular tracks}
+    \centering
+    \includegraphics[width=\textwidth]{images/pop_tracks.png}
+    \caption{Vergleich des Durchschnittswerts und der Standardabweichungen verschiedener Attribute der Top 100 der beliebtesten Songs mit allen Songs. Rechts (grün) sind die populären Lieder dargestellt, und links(grau) sieht man die durchschnittlichen Lieder. Da die Attribute unterschiedliche Wertebereiche haben, werden die Durchschnittswerte und die Standardabweichungen jeweils mit dem globalen Maximum und dem globalen Minimum des Attributs skaliert.}
+    \label{popular tracks}
 \end{figure*}
 
-In Abbildung \ref{popular tracks} wird deutlich, dass die Durchschnittswerte der populären Songs wesentlich niedriger für "Danceability", für die Lautstärke, für akustische Elemente, für Tempo und für die Taktart. Das heißt populäre Lieder eignen sich im Durchschnitt weniger zum Tanzen, sind viel leiser, langsamer, und haben einen geringeren akustischen Anteil. Sie haben weniger Schläge pro Takt. Populäre Songs sind jedoch energetischer, was logisch erscheint, da die durchschnittliche Energie (siehe Abb. \ref{time}) und die durchschnittliche Beliebtheit (siehe Abb. \ref{popularity_time}) in den letzten Jahren besonders hoch ist.
+In Abbildung \eqref{popular tracks} wird deutlich, dass die Durchschnittswerte der populären Songs wesentlich niedriger für \textit{danceability}, für die Lautstärke, für akustische Elemente, für Tempo und für die Taktart. Das heißt populäre Lieder eignen sich im Durchschnitt weniger zum Tanzen, sind viel leiser, langsamer, und haben einen geringeren akustischen Anteil. Sie haben weniger Schläge pro Takt. Populäre Songs sind jedoch energetischer, was logisch erscheint, da die durchschnittliche Energie (siehe Abb. \eqref{time}) und die durchschnittliche Beliebtheit (siehe Abb. \eqref{popularity_time}) in den letzten Jahren besonders hoch ist.
 Außerdem kann man erkennen, dass die Standardabweichung für die top 100 beliebtesten Lieder in fast allen Attributen geringer ist, was darauf hindeutet, dass sich populäre Lieder untereinander in ihren Attributen ähnlicher sind.
 Man kann auf Grund dieser Resultate populäre Lieder (Lieder die oft in Playlisten auf Spotify aufgenommen werden) wie folgt charakterisieren: sie haben trotz geringerem Tempo und geringer Lautstärke viel Energie leicht positiver, und generell weniger Variation in den Attributen. Eventuell eignen sie sich also eher zum Hören im Hintergrund. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsubsection{Vergleich populärer Künstler mit durchschnittlichen Künstlern}
 
@@ -237,13 +236,13 @@ Zunächst haben wir die Durchschnittswerte für jeden Künstler und jedes Attrib
 \caption{Vergleich des Durchschnittswerts und der Standardabweichungen verschiedener Attribute der den Top 100 beliebtesten Künstler mit allen Künstlern insgesamt. Rechts (grün) sind die populären Künstler dargestellt, und links(grau) sieht man die durchschnittlichen Artisten. Da die Attribute unterschiedliche Wertebereiche haben, werden die Durchschnittswerte und die Standardabweichungen jeweils mit dem globalen Maximum und dem globalen Minimum des Attributs skaliert.}
 \label{popular artists}
 \end{figure*}
-In Abbildung \ref{popular artists} sieht man viele Ähnlichkeiten zu den Ergebnissen in Abbildung \ref{popular tracks}.
+In Abbildung \eqref{popular artists} sieht man viele Ähnlichkeiten zu den Ergebnissen in Abbildung \eqref{popular tracks}.
 
 Ein paar kleinere Unterschiede sind die im Durchschnitt geringere "Valence" der populären Künstler im Vergleich zum Durchschnittskünstler und die Ähnlchkeit der durchschnittlichen Energielevel. Die kleine Standardabweichung ist auch hier wieder indikativ für die Ähnlichkeit der populären Künstler untereinander.
 Was man in beiden Abbildungen erkennen kann, ist dass Popularität mit weniger Eignung zum Tanzen, langsamerem Tempo, weniger Schlägen pro Takt, geringerer Lautstärke, weniger Instrumentalanteil, weniger akustischen Elementen und weniger Varianz in den Attributen einhergeht.
 
 \subsubsection{Vergleich der Eigenschaften populärer Lieder mit den Liedern populärer Künstler}
-In Abbildung \ref{popular artists vs popular songs} sieht man die Statistiken beliebter Künstler gegenübergestellt zu den Statistiken beliebter Lieder. Man kann folgende Unterschiede feststellen: Die Varianz der Attribute scheint bei beliebten Künstlern noch stärker eingeschränkt zu sein als bei den beliebtesten Songs, was bedeutet dass sich beliebte Künstler untereinander mehr ähneln als beliebte Lieder. Weiterhin haben beliebte Künstler etwas weniger energetische Lieder, mit etwas höherem Akustik-Anteil.
+In Abbildung \eqref{popular artists vs popular songs} sieht man die Statistiken beliebter Künstler gegenübergestellt zu den Statistiken beliebter Lieder. Man kann folgende Unterschiede feststellen: Die Varianz der Attribute scheint bei beliebten Künstlern noch stärker eingeschränkt zu sein als bei den beliebtesten Songs, was bedeutet dass sich beliebte Künstler untereinander mehr ähneln als beliebte Lieder. Weiterhin haben beliebte Künstler etwas weniger energetische Lieder, mit etwas höherem Akustik-Anteil.
 
 \begin{figure*}[t]
 \centering
@@ -260,17 +259,9 @@ Das untersuchen der Beliebtheit zeigte hingegen, dass sich sowohl beliebte Songs
 \begin{thebibliography}{00}
 \bibitem{d1} Pichl, Martin; Zangerle, Eva; Specht, Günther: "Towards a Context-Aware Music Recommendation Approach: What is Hidden in the Playlist Name?" in 15th IEEE International Conference on Data Mining Workshops (ICDM 2015), pp. 1360-1365, IEEE, Atlantic City, 2015.
 \bibitem{d2} Figueroa, Rodolfo. (2020). Spotify 12M Songs [Dataset]. Kaggle. https://www.kaggle.com/datasets/rodolfofigueroa/spotify-12m-songs
-
-\bibitem{b1} G. Eason, B. Noble, and I. N. Sneddon, ``On certain integrals of Lipschitz-Hankel type involving products of Bessel functions,'' Phil. Trans. Roy. Soc. London, vol. A247, pp. 529--551, April 1955.
-\bibitem{b2} J. Clerk Maxwell, A Treatise on Electricity and Magnetism, 3rd ed., vol. 2. Oxford: Clarendon, 1892, pp.68--73.
-\bibitem{b3} I. S. Jacobs and C. P. Bean, ``Fine particles, thin films and exchange anisotropy,'' in Magnetism, vol. III, G. T. Rado and H. Suhl, Eds. New York: Academic, 1963, pp. 271--350.
-\bibitem{b4} K. Elissa, ``Title of paper if known,'' unpublished.
-\bibitem{b5} R. Nicole, ``Title of paper with only first word capitalized,'' J. Name Stand. Abbrev., in press.
-\bibitem{b6} Y. Yorozu, M. Hirano, K. Oka, and Y. Tagawa, ``Electron spectroscopy studies on magneto-optical media and plastic substrate interface,'' IEEE Transl. J. Magn. Japan, vol. 2, pp. 740--741, August 1987 [Digests 9th Annual Conf. Magnetics Japan, p. 301, 1982].
-\bibitem{b7} M. Young, The Technical Writer's Handbook. Mill Valley, CA: University Science, 1989.
 \end{thebibliography}
 \vspace{12pt}
-\color{red}
-IEEE conference templates contain guidance text for composing and formatting conference papers. Please ensure that all template text is removed from your conference paper prior to submission to the conference. Failure to remove the template text from your paper may result in your paper not being published.
+% \color{red}
+% IEEE conference templates contain guidance text for composing and formatting conference papers. Please ensure that all template text is removed from your conference paper prior to submission to the conference. Failure to remove the template text from your paper may result in your paper not being published.
 
 \end{document}
